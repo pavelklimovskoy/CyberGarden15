@@ -4,7 +4,7 @@ let back= function(p) {
   p.canvas;
 
   p.windowResized = function() {
-    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    p.resizeCanvas(p.windowWidth, p.windowHeight + 1000);
     p.background(0);
   }
 
@@ -29,7 +29,7 @@ let back= function(p) {
   p.posX, p.posY;
 
   p.setup = function() {
-    p.canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+    p.canvas = p.createCanvas(p.windowWidth, p.windowHeight + 1000);
     p.canvas.position(0,0);
     p.canvas.style("z-index", "-1");
 
@@ -97,6 +97,7 @@ let wallpaper = new p5(back);
 
 let jsonRespons;
 
+var bg;
 
 // Нажатие на кнопку генерации
 let generatedImage = false;
@@ -113,50 +114,123 @@ function generateContent()
 
   let text = document.getElementById("textArea").value;
 
-  // if(text != "") 
-  // {
-  //   let req = new XMLHttpRequest();
-  //   req.open("GET", "https://0aea-95-174-102-182.ngrok.io/img/" + text, true);
-  //   req.responseType = "json";
-  //   req.onload = function () {
-  //     jsonRespons = req.response;
+  let picUrl;
+
+  if(text != "") 
+  {
+    let pic = new XMLHttpRequest();
+    pic.open("GET", "http://b77c-95-174-102-182.ngrok.io/img/" + text, true);
+    pic.onload = function () {
+      //jsonRespons = pic.response;
     
-  //     console.log(req.response);
+      console.log(pic.response);
 
-  //     generatedImage = true;
+      picUrl = "http://b77c-95-174-102-182.ngrok.io/" + pic.response;
 
-  //   };
-  //   req.send(null);
-  // }
-  
+      //document.getElementById("imageZone").src = picUrl
 
+      bg =  loadImage(picUrl);
+
+      generatedImage = true;
+
+    };
+    pic.send(null);
+  }
 }
 
+let textOnPic = "";
 
+function getReferat()
+{
+  let ref = new XMLHttpRequest();
+  ref.open("GET", "http://b77c-95-174-102-182.ngrok.io/referat/", true);
+  ref.onload = function () {
+      //jsonRespons = pic.response;
+    
+      console.log(ref.response);
+
+      textOnPic = "http://b77c-95-174-102-182.ngrok.io/" + ref.response;
+    };
+    ref.send(null);
+}
+
+function preload(){
+  bg = loadImage("https://raw.githubusercontent.com/Rabbid76/graphics-snippets/master/resource/texture/background.jpg")
+}
+
+let NUMSINES = 20; // how many of these things can we do at once?
+let sines = new Array(NUMSINES); // an array to hold all the current angles
+let rad; // an initial radius value for the central sine
+let i; // a counter variable
+
+// play with these to get a sense of what's going on:
+let fund = 0.005; // the speed of the central sine
+let ratio = 1; // what multiplier for speed is each additional sine?
+let alpha = 50; // how opaque is the tracing system
+
+let trace = false; // are we tracing?
 
 function setup() {
-  canvas = createCanvas(710, 400, WEBGL);
-  canvas.parent("loadCont");
+  canvas = createCanvas(1000, 1000);
+  canvas.parent('holder');
+
+  rad = height / 4; // compute radius for central circle
+  background(bg); // clear the screen
+
+  for (let i = 0; i<sines.length; i++) {
+    sines[i] = PI; // start EVERYBODY facing NORTH
+  }
 }
 
 function draw() {
-  clear();
 
-  if(generatedImage == true)
+  if(!generatedImage)
   {
-    ambientLight(200);
-    ambientMaterial(70, 130, 230);
+    clear();
+  }
+  else
+  {
+    if (!trace) {
+      background(bg); // clear screen if showing geometry
+      stroke(0, 255); // black pen
+      noFill(); // don't fill
+    }
+  
+    // MAIN ACTION
+    push(); // start a transformation matrix
+    translate(width / 2, height / 2); // move to middle of screen
+  
+    for (let i = 0; i < sines.length; i++) {
+      let erad = 0; // radius for small "point" within circle... this is the 'pen' when tracing
+      // setup for tracing
+      if (trace) {
+        stroke(0, 0, 255 * (float(i) / sines.length), alpha); // blue
+        fill(0, 0, 255, alpha / 2); // also, um, blue
+        erad = 5.0 * (1.0 - float(i) / sines.length); // pen width will be related to which sine
+      }
+      let radius = rad / (i + 1); // radius for circle itself
+      rotate(sines[i]); // rotate circle
+      if (!trace) ellipse(0, 0, radius * 2, radius * 2); // if we're simulating, draw the sine
+      push(); // go up one level
+      translate(0, radius); // move to sine edge
+      if (!trace) ellipse(0, 0, 5, 5); // draw a little circle
+      if (trace) ellipse(0, 0, erad, erad); // draw with erad if tracing
+      pop(); // go down one level
+      translate(0, radius); // move into position for next sine
+      sines[i] = (sines[i] + (fund + (fund * i * ratio))) % TWO_PI; // update angle based on fundamental
+    }
+  
+    pop(); // pop down final transformation
+  
+  }
+  }
 
-    translate(-240, -100, 0);
-    
 
-    translate(240, 0, 0);
-    push();
-    rotateZ(randZ * PI / 180);
-    rotateX(randX * PI / 180);
-    rotateY(randY * PI / 180);
-    box(70, 70, 70);
-    pop();
-  }  
+
+function keyReleased() {
+  if (key==' ') {
+    trace = !trace;
+    background(255);
+  }
 }
 
