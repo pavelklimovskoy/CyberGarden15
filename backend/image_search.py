@@ -11,14 +11,15 @@ REQUEST_LIMIT = 20
 
 def save_image_from_url(image_url: str):
     img_data = requests.get(image_url).content
-    img_name = f'{uuid.uuid4()}.jpg'
+    img_name = f'static/{uuid.uuid4()}.jpg'
+
     with open(img_name, 'wb') as handler:
         handler.write(img_data)
     return img_name
 
 
 def get_only_keywords(query: str):
-    file = codecs.open('./banword', encoding='utf-8')
+    file = codecs.open('banword.txt', encoding='utf-8')
 
     split_line = query.split()
     for i in range(559):
