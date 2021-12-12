@@ -1,12 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <img src= {{name}}>
-</body>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../static/style.css" type="text/css" />
+
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="../static/p5.min.js"
+    ></script>
+    <script
+      language="javascript"
+      type="text/javascript"
+      src="../static/sketch_211211a.js"
+    ></script>
+    <script src="https://rawgit.com/diwi/p5.EasyCam/master/p5.easycam.min.js"></script>
+  </head>
+
+  <body>
+    <div id="holder" class="zone">
+      <textarea
+      id="textArea"
+        rows="10"
+        cols="45"
+        name="text"
+        placeholder="Введите описание картинки"
+      ></textarea>
+      <button onclick="generateContent()">Хочу контент</button>
+
+
+      <!--<div id="loadCont"></div>-->
+
+      <img id="imageZone" src="" class="image-pen">
+    </div>
+
+    <div id="holder" class="btns">
+        <button onclick="generateContent()">Круть!</button>
+        <button onclick="generateContent()">Жуть!</button>
+    </div>
+
+    <div>
+      <button onclick="generateContent()">Скачать</button>        
+    </div>
+    
+
+  </body>
 </html>

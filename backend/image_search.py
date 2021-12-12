@@ -37,8 +37,9 @@ def get_only_keywords(query: str):
 
 # Words in the query should be divided by '+' sign
 def get_image_url_from_query(query: str):
+    print(query)
     strForSearch = get_only_keywords(query)
-
+    print(strForSearch)
     response = requests.get(f'https://pixabay.com/api/?key={API_KEY}&q={strForSearch}&lang=ru&per_page={REQUEST_LIMIT}')
     hits = response.json()['hits']
     if not len(hits):

@@ -39,26 +39,10 @@ def index():
 def img(strn):
     if request.method == 'GET':
         name = "/" + result_generate(strn)
-        return render_template('index.html', name=name)
+        return name
 
-@app.route('/balaboba/<str>')
-def bablaboba(str):
-    headers = {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_4) AppleWebKit/605.1.15 '
-                      '(KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
-        'Origin': 'https://yandex.ru',
-        'Referer': 'https://yandex.ru/',
-    }
-    url = 'https://zeapi.yandex.net/lab/api/yalm/text3'
-    data = {"filter": 1, "intro": 0, "query": str}
-    params = json.dumps(data).encode('utf8')
-    req = urllib.request.Request(url, data=params, headers=headers)
-    response = urllib.request.urlopen(req)
-    return response.read().decode('unicode-escape')
-
-@app.route('/referat/<str>')
-def referat(str):
+@app.route('/referat/')
+def referat():
     url = 'https://yandex.ru/referats/creator/write/?t='
     req = requests.get(url)
     return req.text
