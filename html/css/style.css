@@ -43,3 +43,9 @@ button {
   border: none;
   border-radius: 5px;
 }
+
+
+.btCnt{
+  display: flex;
+  column-gap: 30px;
+}

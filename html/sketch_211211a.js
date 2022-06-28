@@ -103,7 +103,8 @@ var bg;
 let generatedImage = false;
 function generateContent()
 {
-  
+  getReferat();
+
   randX = random(-50, 50);
   randY = random(-50, 50);
   randZ = random(-50, 50);
@@ -111,6 +112,10 @@ function generateContent()
   generatedImage = true;
 
 
+  cx = random(0, 1000);
+  cy = random(0, 1000);
+
+  randWidth = random(1, 5);
 
   let text = document.getElementById("textArea").value;
 
@@ -119,47 +124,49 @@ function generateContent()
   if(text != "") 
   {
     let pic = new XMLHttpRequest();
-    pic.open("GET", "http://b77c-95-174-102-182.ngrok.io/img/" + text, true);
+    pic.open("GET", "http://ab49-95-174-102-182.ngrok.io/img/" + text, true);
     pic.onload = function () {
       //jsonRespons = pic.response;
     
       console.log(pic.response);
 
-      picUrl = "http://b77c-95-174-102-182.ngrok.io/" + pic.response;
+      picUrl = "http://ab49-95-174-102-182.ngrok.io/" + pic.response;
 
       //document.getElementById("imageZone").src = picUrl
 
       bg =  loadImage(picUrl);
-
-      generatedImage = true;
 
     };
     pic.send(null);
   }
 }
 
-let textOnPic = "";
+let textOnPic = "1111";
 
 function getReferat()
 {
   let ref = new XMLHttpRequest();
-  ref.open("GET", "http://b77c-95-174-102-182.ngrok.io/referat/", true);
+  ref.open("GET", "http://ab49-95-174-102-182.ngrok.io/referat/", true);
   ref.onload = function () {
       //jsonRespons = pic.response;
-    
-      console.log(ref.response);
 
-      textOnPic = "http://b77c-95-174-102-182.ngrok.io/" + ref.response;
+      textOnPic = ref.response;
+
+      console.log(textOnPic);
     };
     ref.send(null);
 }
 
+var myFont;
+
 function preload(){
-  bg = loadImage("https://raw.githubusercontent.com/Rabbid76/graphics-snippets/master/resource/texture/background.jpg")
+  bg = loadImage("https://raw.githubusercontent.com/Rabbid76/graphics-snippets/master/resource/texture/background.jpg");
+  myFont = loadFont('Caveat-Regular.ttf');
+  
 }
 
 let NUMSINES = 20; // how many of these things can we do at once?
-let sines = new Array(NUMSINES); // an array to hold all the current angles
+let sines = new Array(31); // an array to hold all the current angles
 let rad; // an initial radius value for the central sine
 let i; // a counter variable
 
@@ -170,67 +177,91 @@ let alpha = 50; // how opaque is the tracing system
 
 let trace = false; // are we tracing?
 
+let cx = 0;
+let cy = 0;
+
+let randWidth = 1;
+
+
 function setup() {
-  canvas = createCanvas(1000, 1000);
-  canvas.parent('holder');
-
-  rad = height / 4; // compute radius for central circle
-  background(bg); // clear the screen
-
-  for (let i = 0; i<sines.length; i++) {
-    sines[i] = PI; // start EVERYBODY facing NORTH
-  }
+  canvas = createCanvas(1000, 1000, WEBGL);
+  canvas.parent("holder");
 }
 
+let it = 0;
+let rtx = 0;
+let rty = 0;
 function draw() {
+  push();
+  translate(0,  0);
+  texture(bg);
+  plane(1000, 1000);
+  pop();
 
-  if(!generatedImage)
+  textFont(myFont);
+  textSize(90);
+  text(textOnPic.toString(), rtx, rty);
+
+  if(it % 5 == 0)
   {
-    clear();
-  }
-  else
-  {
-    if (!trace) {
-      background(bg); // clear screen if showing geometry
-      stroke(0, 255); // black pen
-      noFill(); // don't fill
-    }
-  
-    // MAIN ACTION
-    push(); // start a transformation matrix
-    translate(width / 2, height / 2); // move to middle of screen
-  
-    for (let i = 0; i < sines.length; i++) {
-      let erad = 0; // radius for small "point" within circle... this is the 'pen' when tracing
-      // setup for tracing
-      if (trace) {
-        stroke(0, 0, 255 * (float(i) / sines.length), alpha); // blue
-        fill(0, 0, 255, alpha / 2); // also, um, blue
-        erad = 5.0 * (1.0 - float(i) / sines.length); // pen width will be related to which sine
-      }
-      let radius = rad / (i + 1); // radius for circle itself
-      rotate(sines[i]); // rotate circle
-      if (!trace) ellipse(0, 0, radius * 2, radius * 2); // if we're simulating, draw the sine
-      push(); // go up one level
-      translate(0, radius); // move to sine edge
-      if (!trace) ellipse(0, 0, 5, 5); // draw a little circle
-      if (trace) ellipse(0, 0, erad, erad); // draw with erad if tracing
-      pop(); // go down one level
-      translate(0, radius); // move into position for next sine
-      sines[i] = (sines[i] + (fund + (fund * i * ratio))) % TWO_PI; // update angle based on fundamental
-    }
-  
-    pop(); // pop down final transformation
-  
-  }
+    rtx = random(-600, 600);
+    rty = random(-600, 600);
   }
 
+  translate(-240, -100, 0);
+  normalMaterial();
+  push();
+  rotateZ(frameCount * 0.01);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  plane(70);
+  pop();
 
+  translate(240, 0, 0);
+  push();
+  rotateZ(frameCount * 0.01);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  box(70, 70, 70);
+  pop();
 
-function keyReleased() {
-  if (key==' ') {
-    trace = !trace;
-    background(255);
-  }
+  translate(240, 0, 0);
+  push();
+  rotateZ(frameCount * 0.01);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  cylinder(70, 70);
+  pop();
+
+  translate(-240 * 2, 200, 0);
+  push();
+  rotateZ(frameCount * 0.01);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  cone(70, 70);
+  pop();
+
+  translate(240, 0, 0);
+  push();
+  rotateZ(frameCount * 0.01);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  torus(70, 20);
+  pop();
+
+  translate(240, 0, 0);
+  push();
+  rotateZ(frameCount * 0.01);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  sphere(70);
+  pop();
+
+  //translate(240, 0, 10);
+  it++;
 }
 
+function Download()
+{
+  saveCanvas("image", "jpg");
+}
